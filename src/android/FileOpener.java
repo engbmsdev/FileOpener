@@ -27,7 +27,7 @@ public class FileOpener extends CordovaPlugin {
 
         try {
             if (action.equals("openFile")) {
-                openFile(args.getString(0));
+                openFile(args.getString(0), args.getBoolean(1));
                 callbackContext.success();
                 return true;
             }
@@ -41,13 +41,13 @@ public class FileOpener extends CordovaPlugin {
         return false;
     }
 
-    private void openFile(String url) throws IOException {
+    private void openFile(String url, boolean inNewTask) throws IOException {
         // Create URI
         Uri uri = Uri.parse(url);
 
         Intent intent;
         // Check what kind of file you are trying to open, by comparing the url with extensions.
-        // When the if condition is matched, plugin sets the correct intent (mime) type, 
+        // When the if condition is matched, plugin sets the correct intent (mime) type,
         // so Android knew what application to use to open the file
 
         if (url.contains(".doc") || url.contains(".docx")) {
@@ -91,13 +91,13 @@ public class FileOpener extends CordovaPlugin {
             intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(uri, "video/*");
         }
-                
+
         //if you want you can also define the intent type for any other file
-        
+
         //additionally use else clause below, to manage other unknown extensions
         //in this case, Android will show all applications installed on the device
         //so you can choose which application to use
-        
+
         // else {
         //     intent = new Intent(Intent.ACTION_VIEW);
         //     intent.setDataAndType(uri, "*/*");
@@ -107,6 +107,10 @@ public class FileOpener extends CordovaPlugin {
             String mimeType = URLConnection.guessContentTypeFromName(url);
             intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(uri, mimeType);
+        }
+
+        if (inNewTask){
+        	intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
 
         this.cordova.getActivity().startActivity(intent); // TODO handle ActivityNotFoundException
