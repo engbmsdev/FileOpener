@@ -13,7 +13,7 @@ module.exports = {
             }
         }
         if (typeof newTask == 'undefined'){
-          newTask = false;
+          newTask = true
         }
 
         cordova.exec(opt_success, opt_failure, "FileOpener", "openFile", [url, newTask]);
